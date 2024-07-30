@@ -24,11 +24,11 @@ if(any(!unlist(.loading))) stop("looks like some library did not load")
 # IMPORT DATA #
 ###############
 
-d_otree <- read.csv("~/experiment/user_testing_2/data/raw/data_otree_plain.csv",
+d_otree <- read.csv("data_otree_plain.csv",
                      sep = ",",
                      header = TRUE)
 
-d_prol <- read.csv("~/experiment/user_testing_2/data/raw/prolific_demographic_data.csv",
+d_prol <- read.csv("data_prolific_demograph.csv",
                    sep = ",",
                    header = TRUE) %>% 
   select(!c("Custom.study.tncs.accepted.at","Reviewed.at", "Submission.id", "Status", "Completion.code")) %>% # nicht importierte columns
@@ -41,50 +41,7 @@ d_prol <- read.csv("~/experiment/user_testing_2/data/raw/prolific_demographic_da
 # PRE-PROCESSING #
 ##################
 
-# LIST OF REMOVED COLUMNS
-col_list_rm <- c("participant.label",
-                 "participant.visited",
-                 "participant._current_page_name",
-                 "participant.mturk_worker_id",
-                 "participant.mturk_assignment_id",
-                 "participant.payoff",
-                 "participant._is_bot",
-                 "participant._index_in_pages",
-                 "participant._max_page_index",
-                 "participant.participiant_field_1",
-                 "session.code",
-                 "session.label",
-                 "session.mturk_HITId",
-                 "session.mturk_HITGroupId",
-                 "session.comment",
-                 "session.is_demo",
-                 "session.config.participation_fee",
-                 "session.config.real_world_currency_per_point",
-                 "session.config.name",
-                 "session.session_field_1",
-                 "welcome.1.player.id_in_group",
-                 "welcome.1.player.role",
-                 "welcome.1.player.payoff",
-                 "welcome.1.group.id_in_subsession",
-                 "welcome.1.subsession.round_number",
-                 "survey_1.1.player.id_in_group",
-                 "survey_2.1.player.id_in_group",
-                 "survey_3.1.player.id_in_group",
-                 "survey_1.1.player.role",
-                 "survey_2.1.player.role",
-                 "survey_3.1.player.role",
-                 "survey_1.1.player.payoff",
-                 "survey_2.1.player.payoff",
-                 "survey_3.1.player.payoff",
-                 "survey_1.1.group.id_in_subsession",
-                 "survey_2.1.group.id_in_subsession",
-                 "survey_3.1.group.id_in_subsession",
-                 "survey_1.1.subsession.round_number",
-                 "survey_2.1.subsession.round_number",
-                 "survey_3.1.subsession.round_number")
 
-
-############  
 d_proc <- d_otree %>%
   filter(participant.visited %in% 1,                # get rid of unused rows
          session.code %in% "9xeb44bb",              # get rid of wrong session
@@ -248,10 +205,10 @@ d_proc <- d_otree %>%
             survey_3.1.group.id_in_subsession:survey_3.1.subsession.round_number)) %>%
   relocate(c(prol_id, code, treat), .before = ud1) %>%
   relocate(c(da5, da6, af1), .after = da4) %>%
+  relocate(ud2, .before = ud3) %>%
   mutate_at(c(6:39), as.numeric)
   
   
-
 
 
 
@@ -265,9 +222,8 @@ d_full <- d_prol %>% full_join(d_proc, by = join_by(prol_id)) %>%
                       "k1ydrtzh", "5fglq7lh", "uc3s755q", "8dkkaw00",      # filter erroneous participants (see below)
                       "ebz9etbg",                                          # filter one "returned"
                       "3lgpbk8e", "1mo5amku",                              # filter gender inconsistencies
-                      "v46i9113"),                                         # filter one participant with missing responses
-         
-         ac1 == 3 | ac2 == 5 ) %>%   #remove ac1/2-fails
+                      "v46i9113"),
+         ac1 == 3, ac2 == 5) %>%                                           #remove ac1/2-fails
   dplyr::rename(time = Time.taken,
          age  = Age,
          ethnic = Ethnicity.simplified,
@@ -281,12 +237,10 @@ d_full <- d_prol %>% full_join(d_proc, by = join_by(prol_id)) %>%
   select(!c(Started.at:Archived.at, Total.approvals, Sex))
 
 
-
 ##### ZU KLÄREN
 
 #Employment Status
 #Prolific-Daten umkodieren und in Codebook einfügen?
-
 
 
 ###########
