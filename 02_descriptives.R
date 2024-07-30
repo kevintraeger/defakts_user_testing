@@ -3,12 +3,15 @@
 ##########################
 
 
+
 # LOADING DATA & PACKAGES
 source("01_import.R")
 
 
+
 # SUMMARY STATISTICS
 summary(d_full)
+
 
 
 # DISTRIBUTION TREATMENT

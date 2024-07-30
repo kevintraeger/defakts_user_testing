@@ -23,6 +23,7 @@ if(any(!unlist(.loading))) stop("looks like some library did not load")
 # IMPORT DATA #
 ###############
 
+
 d_otree <- read.csv("data_otree_plain.csv",           # Otree Data     
                      sep = ",",
                      header = TRUE)
@@ -210,8 +211,10 @@ d_proc <- d_otree %>%
   relocate(c(da5, da6, af1), .after = da4) %>%
   relocate(ud2, .before = ud3) %>%
   mutate_at(c(6:39), as.numeric)                                         # allocate data type
+
   
   
+
 
 
 
@@ -227,7 +230,7 @@ d_full <- d_prol %>% full_join(d_proc, by = join_by(prol_id)) %>%
                       "3lgpbk8e", "1mo5amku",                              # remove gender inconsistencies
                       "v46i9113"),                                         # remove one participant with missing responses
          ac1 == 3, ac2 == 5) %>%                                           # remove ac1/2-fails
-  dplyr::rename(time = Time.taken,                                         # unify variable names 
+  dplyr::rename(time = Time.taken,                                         # unify variable names
          age  = Age,
          ethnic = Ethnicity.simplified,
          country_birth = Country.of.birth,
@@ -249,5 +252,6 @@ d_full <- d_prol %>% full_join(d_proc, by = join_by(prol_id)) %>%
 #d_treat1 <- d_full[d_full$treat == 1,]
 #d_treat2 <- d_full[d_full$treat == 2,]
 #d_treat3 <- d_full[d_full$treat == 3,]
+
 
 
