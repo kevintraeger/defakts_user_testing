@@ -1,0 +1,52 @@
+NOTES
+
+
+# GENDER INCONSISTENCIES
+# ifelse(d_clean$Sex == d_clean$participant.gender, "w", "FALSCH")
+# d_clean[,c("Sex","participant.gender", "participant.treat", "participant.code")] %>% slice(110, 140, 171, 228, 259, 279, 313)
+
+
+
+
+
+# REVIEWING non-MATCHES
+#d_anti_prol <- d_prol %>% anti_join(d_filt, by = join_by(prolific_id))
+#d_anti_filt <- d_filt %>% anti_join(d_prol, by = join_by(prolific_id))
+#d_filt %>% filter(if_any(everything(), ~ prolific_id == "65f9ad99041f0b16004a4e76d"))
+#d_prol %>% filter(if_any(everything(), ~ prolific_id == "65f9ad99041f0b16004a4e76d"))
+#which(d_filt$prolific_id == "65f9ad99041f0b16004a4e76d", arr.ind=TRUE)
+#any(d_prol$prolific_id=="662f9a2a8f5ce63911f896b2")
+
+# ERRONEOUS PARTICIPANTS
+#   k1ydrtzh / ...  --> keine valide prolific_id (falsche Eingabe durch Participant)
+#   5fglq7lh / ...  --> keine valide prolific_id (falsche Eingabe durch Participant)
+#   uc3s755q / 65f9ad99041f0b16004a4e76d --> prolific_id doesn't exist in d_prol
+#   8dkkaw00 / 662f9a2a8f5ce63911f896b2 --> prolific_id doesn't exist in d_prol
+
+
+
+
+# SCHNELLE ROHDATEN FÜR ISABEL
+#d_raw_export <- d_otree %>%
+#  filter(participant.visited %in% 1,
+#         session.code %in% "9xeb44bb",
+#         !participant.code %in% c("fihql90t", "f3kx1fp4", "4jinqv0q"), #remove test participants
+#         !participant._current_app_name == "")
+# write.xlsx(d_raw_export, 'user_testing_d_raw_export_v1.xlsx')
+
+
+
+# LISTE MIT AC-FAILS
+#d_ac_fail <- d_filt %>%
+#  filter(!survey_1.1.player.ac1 == 3 | !survey_2.1.player.ac1 == 3 | !survey_3.1.player.ac1 == 3 |
+#         !survey_1.1.player.ac2 == 5 | !survey_2.1.player.ac2 == 5 | !survey_3.1.player.ac2 == 5) %>%
+#  mutate(item.ac1 = coalesce(survey_1.1.player.ac1, survey_2.1.player.ac1, survey_3.1.player.ac1)) %>%
+#  mutate(item.ac2 = coalesce(survey_1.1.player.ac2, survey_2.1.player.ac2, survey_3.1.player.ac2)) %>%
+#  select(participant.id_in_session,
+#         participant.code,
+#         prolific_id,
+#         item.ac1,
+#         item.ac2,
+#         participant.treat)
+# write.xlsx(d_ac_fail, 'user_testing_table_ac_fails_v1.xlsx') # export as xlsx
+
