@@ -24,14 +24,18 @@ if(any(!unlist(.loading))) stop("looks like some library did not load")
 # IMPORT DATA #
 ###############
 
-d_otree <- read.csv("~/experiment/user_testing_2/data/raw/data_otree_plain.csv",
+d_otree <- read.csv("data_otree_plain.csv",           # Otree Data     
                      sep = ",",
                      header = TRUE)
 
-d_prol <- read.csv("~/experiment/user_testing_2/data/raw/prolific_demographic_data.csv",
+d_prol <- read.csv("data_prolific_demograph.csv",     # Prolific Data
                    sep = ",",
                    header = TRUE) %>% 
-  select(!c("Custom.study.tncs.accepted.at","Reviewed.at", "Submission.id", "Status", "Completion.code")) %>% # nicht importierte columns
+  select(!c("Custom.study.tncs.accepted.at",          # nicht importierte Porlific-columns
+            "Reviewed.at",
+            "Submission.id",
+            "Status",
+            "Completion.code")) %>% 
   dplyr::rename(prol_id = Participant.id)
 
 
@@ -41,61 +45,18 @@ d_prol <- read.csv("~/experiment/user_testing_2/data/raw/prolific_demographic_da
 # PRE-PROCESSING #
 ##################
 
-# LIST OF REMOVED COLUMNS
-col_list_rm <- c("participant.label",
-                 "participant.visited",
-                 "participant._current_page_name",
-                 "participant.mturk_worker_id",
-                 "participant.mturk_assignment_id",
-                 "participant.payoff",
-                 "participant._is_bot",
-                 "participant._index_in_pages",
-                 "participant._max_page_index",
-                 "participant.participiant_field_1",
-                 "session.code",
-                 "session.label",
-                 "session.mturk_HITId",
-                 "session.mturk_HITGroupId",
-                 "session.comment",
-                 "session.is_demo",
-                 "session.config.participation_fee",
-                 "session.config.real_world_currency_per_point",
-                 "session.config.name",
-                 "session.session_field_1",
-                 "welcome.1.player.id_in_group",
-                 "welcome.1.player.role",
-                 "welcome.1.player.payoff",
-                 "welcome.1.group.id_in_subsession",
-                 "welcome.1.subsession.round_number",
-                 "survey_1.1.player.id_in_group",
-                 "survey_2.1.player.id_in_group",
-                 "survey_3.1.player.id_in_group",
-                 "survey_1.1.player.role",
-                 "survey_2.1.player.role",
-                 "survey_3.1.player.role",
-                 "survey_1.1.player.payoff",
-                 "survey_2.1.player.payoff",
-                 "survey_3.1.player.payoff",
-                 "survey_1.1.group.id_in_subsession",
-                 "survey_2.1.group.id_in_subsession",
-                 "survey_3.1.group.id_in_subsession",
-                 "survey_1.1.subsession.round_number",
-                 "survey_2.1.subsession.round_number",
-                 "survey_3.1.subsession.round_number")
 
-
-############  
 d_proc <- d_otree %>%
-  filter(participant.visited %in% 1,                # get rid of unused rows
-         session.code %in% "9xeb44bb",              # get rid of wrong session
+  filter(participant.visited %in% 1,                # remove unused rows
+         session.code %in% "9xeb44bb",              # remove wrong session
          participant.visited %in% 1,
          !participant._current_app_name == "",
          ) %>% 
-  unite(prol_id, c(survey_1.1.player.pid,       # create one prolific_id
-                       survey_2.1.player.pid,
-                       survey_3.1.player.pid),
-                       sep = "") %>%
-  unite(ud1, c(survey_1.1.player.ud1,
+  unite(prol_id, c(survey_1.1.player.pid,           # unify prolific_id
+                   survey_2.1.player.pid,
+                   survey_3.1.player.pid),
+        sep = "") %>%
+  unite(ud1, c(survey_1.1.player.ud1,               # unify all survey items
                survey_2.1.player.ud1,
                survey_3.1.player.ud1),
         na.rm = T,  sep = "") %>%
@@ -227,12 +188,12 @@ d_proc <- d_otree %>%
   dplyr::rename(da2 = survey_3.1.player.da2,
                 da3 = survey_3.1.player.da3,
                 da4 = survey_3.1.player.da4) %>%
-  mutate(treat = dplyr::recode(participant._current_app_name,
+  mutate(treat = dplyr::recode(participant._current_app_name,            # recode treatment
                                "survey_1" = 1,
                                "survey_2" = 2,
                                "survey_3" = 3,
                                .default = 99),
-         ud1 = dplyr::recode(ud1,
+         ud1 = dplyr::recode(ud1,                                        # rebuild gender (ud1)
                              "Männlich"= 1,
                              "Weiblich"= 2,
                              "Divers" = 3,
@@ -240,35 +201,34 @@ d_proc <- d_otree %>%
                              "w" = 2,
                              "d" = 3,
                              .default = 99)) %>%
-  dplyr::rename(id_session = participant.id_in_session,
+  dplyr::rename(id_session = participant.id_in_session,                  # renaming
                 code = participant.code) %>%
-  select(!c(participant.label:survey_1.1.player.payoff,
+  select(!c(participant.label:survey_1.1.player.payoff,                  # remove unused variables
             survey_1.1.group.id_in_subsession:survey_2.1.player.payoff,
             survey_2.1.group.id_in_subsession:survey_3.1.player.payoff,
             survey_3.1.group.id_in_subsession:survey_3.1.subsession.round_number)) %>%
-  relocate(c(prol_id, code, treat), .before = ud1) %>%
+  relocate(c(prol_id, code, treat), .before = ud1) %>%                   # reorder columns
   relocate(c(da5, da6, af1), .after = da4) %>%
-  mutate_at(c(6:39), as.numeric)
+  relocate(ud2, .before = ud3) %>%
+  mutate_at(c(6:39), as.numeric)                                         # allocate data type
   
   
 
 
 
-
-#########################
+########################
 # MERGING & FILTERING #
 #######################
 
 # D_FULL == merged dataset without technically faulty observations
 d_full <- d_prol %>% full_join(d_proc, by = join_by(prol_id)) %>%
-  filter(!code %in% c("fihql90t", "f3kx1fp4", "4jinqv0q",                  # filter test participants
-                      "k1ydrtzh", "5fglq7lh", "uc3s755q", "8dkkaw00",      # filter erroneous participants (see below)
-                      "ebz9etbg",                                          # filter one "returned"
-                      "3lgpbk8e", "1mo5amku",                              # filter gender inconsistencies
-                      "v46i9113"),                                         # filter one participant with missing responses
-         
-         ac1 == 3 | ac2 == 5 ) %>%   #remove ac1/2-fails
-  dplyr::rename(time = Time.taken,
+  filter(!code %in% c("fihql90t", "f3kx1fp4", "4jinqv0q",                  # remove test participants
+                      "k1ydrtzh", "5fglq7lh", "uc3s755q", "8dkkaw00",      # remove erroneous participants (see below)
+                      "ebz9etbg",                                          # remove one "returned"
+                      "3lgpbk8e", "1mo5amku",                              # remove gender inconsistencies
+                      "v46i9113"),                                         # remove one participant with missing responses
+         ac1 == 3, ac2 == 5) %>%                                           # remove ac1/2-fails
+  dplyr::rename(time = Time.taken,                                         # unify variable names 
          age  = Age,
          ethnic = Ethnicity.simplified,
          country_birth = Country.of.birth,
@@ -278,23 +238,17 @@ d_full <- d_prol %>% full_join(d_proc, by = join_by(prol_id)) %>%
          student = Student.status,
          employment_prol = Employment.status) %>%
   mutate(age = as.numeric(age)) %>%
-  select(!c(Started.at:Archived.at, Total.approvals, Sex))
+  select(!c(Started.at:Archived.at, Total.approvals, Sex))                 # remove useless columns
 
 
 
-##### ZU KLÄREN
 
-#Employment Status
-#Prolific-Daten umkodieren und in Codebook einfügen?
+################
+# OPT: SUBSETS #
+################
 
-
-
-###########
-# SUBSETS #
-###########
-
-#d_treat1 <- d_clean[d_clean$participant.treat == 1,]
-#d_treat2 <- d_clean[d_clean$participant.treat == 2,]
-#d_treat3 <- d_clean[d_clean$participant.treat == 3,]
+#d_treat1 <- d_full[d_full$treat == 1,]
+#d_treat2 <- d_full[d_full$treat == 2,]
+#d_treat3 <- d_full[d_full$treat == 3,]
 
 

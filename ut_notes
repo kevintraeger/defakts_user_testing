@@ -50,3 +50,47 @@ NOTES
 #         participant.treat)
 # write.xlsx(d_ac_fail, 'user_testing_table_ac_fails_v1.xlsx') # export as xlsx
 
+
+
+# LIST OF REMOVED COLUMNS
+col_list_rm <- c("participant.label",
+                 "participant.visited",
+                 "participant._current_page_name",
+                 "participant.mturk_worker_id",
+                 "participant.mturk_assignment_id",
+                 "participant.payoff",
+                 "participant._is_bot",
+                 "participant._index_in_pages",
+                 "participant._max_page_index",
+                 "participant.participiant_field_1",
+                 "session.code",
+                 "session.label",
+                 "session.mturk_HITId",
+                 "session.mturk_HITGroupId",
+                 "session.comment",
+                 "session.is_demo",
+                 "session.config.participation_fee",
+                 "session.config.real_world_currency_per_point",
+                 "session.config.name",
+                 "session.session_field_1",
+                 "welcome.1.player.id_in_group",
+                 "welcome.1.player.role",
+                 "welcome.1.player.payoff",
+                 "welcome.1.group.id_in_subsession",
+                 "welcome.1.subsession.round_number",
+                 "survey_1.1.player.id_in_group",
+                 "survey_2.1.player.id_in_group",
+                 "survey_3.1.player.id_in_group",
+                 "survey_1.1.player.role",
+                 "survey_2.1.player.role",
+                 "survey_3.1.player.role",
+                 "survey_1.1.player.payoff",
+                 "survey_2.1.player.payoff",
+                 "survey_3.1.player.payoff",
+                 "survey_1.1.group.id_in_subsession",
+                 "survey_2.1.group.id_in_subsession",
+                 "survey_3.1.group.id_in_subsession",
+                 "survey_1.1.subsession.round_number",
+                 "survey_2.1.subsession.round_number",
+                 "survey_3.1.subsession.round_number")
+
