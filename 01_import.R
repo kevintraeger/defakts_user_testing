@@ -19,7 +19,6 @@ if(any(!unlist(.loading))) stop("looks like some library did not load")
 
 
 
-
 ###############
 # IMPORT DATA #
 ###############
