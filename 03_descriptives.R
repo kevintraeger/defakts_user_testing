@@ -2,7 +2,6 @@
 # DESCRIPTIVE STATISTICS # 
 ##########################
 
-rm(list = ls())
 
 # LOADING DATA & PACKAGES
 source("01_import.R")
